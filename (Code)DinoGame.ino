@@ -55,12 +55,10 @@ void loop() {
   if(digitalRead(7)==HIGH){button=true;}else{button=false;}
   if(button){digitalWrite(2, HIGH);analogWrite(3, 0);--points;tone(6, 300);}else{digitalWrite(2, LOW); analogWrite(3, 255);points+=2;}
   lcd.setCursor(13, 1);
-  
   lcd.print(points);
   
   analogWrite(5,0);
   if(last_pin&&button==false){game_end=true;lcd.setCursor(0, 0);lcd.print("YOU LOST");}else if(last_pin){analogWrite(5,255);}
-
 
   time=time-2;
   if(time<200){game_end = true;lcd.setCursor(0, 0);lcd.print("YOU WON");}
