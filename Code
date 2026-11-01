@@ -1,1 +1,84 @@
+//IDE: Arduino IDE
+#include <LiquidCrystal.h>
 
+LiquidCrystal lcd(A0, A1, A2, A3, A4, A5);
+
+bool kactus_values[] = {true, false, false, false, false};
+bool game_end = false;
+bool button = false;
+int kactus_pins[] = {13, 12, 11, 10};
+int tick = 0;
+int tickb = 0;
+int time = 500;
+int randValue = 0;
+bool last_pin = false;
+short points = 10;
+
+void setup() {
+  // put your setup code here, to run once:
+pinMode(2, OUTPUT);//player in Jump
+pinMode(3, OUTPUT);//blue
+pinMode(5, OUTPUT);//green
+pinMode(9, OUTPUT);//red
+pinMode(10, OUTPUT);//kactus.4
+pinMode(11, OUTPUT);//kactus.3
+pinMode(12, OUTPUT);//kactus.2
+pinMode(13, OUTPUT);//kactus.1
+pinMode(7, INPUT);//button
+Serial.begin(9600);
+lcd.begin(16, 2);
+  lcd.setCursor(0, 0);
+  lcd.print("Hello!");
+  lcd.setCursor(0, 1);
+  lcd.print("Score:");
+}
+
+void loop() {
+  // put your main code here, to run repeatedly:
+
+  bool temp_kactus_values[] = {true, false, false, false, false};
+
+  for (int i = 0; i < 4; i++) {
+    temp_kactus_values[i+1] = kactus_values[i];
+    if (kactus_values[i]) {digitalWrite(kactus_pins[i], HIGH);}
+    else {digitalWrite(kactus_pins[i], LOW);}}
+  tick++;
+
+  randValue = random(2, 4);
+  if (tick % randValue == 0) {temp_kactus_values[0] = true;}else{temp_kactus_values[0] = false;}
+  for (int i = 0; i < 5; i++) {kactus_values[i] = temp_kactus_values[i];}   
+  
+  if(digitalRead(10)==HIGH){last_pin=true;}else{last_pin = false;}
+  lcd.print("   ");
+  delay(time);
+  noTone(6);
+
+  if(digitalRead(7)==HIGH){button=true;}else{button=false;}
+  if(button){digitalWrite(2, HIGH);analogWrite(3, 0);--points;tone(6, 300);}else{digitalWrite(2, LOW); analogWrite(3, 255);points+=2;}
+  lcd.setCursor(13, 1);
+  
+  lcd.print(points);
+  
+  analogWrite(5,0);
+  if(last_pin&&button==false){game_end=true;lcd.setCursor(0, 0);lcd.print("YOU LOST");}else if(last_pin){analogWrite(5,255);}
+
+
+  time=time-2;
+  if(time<200){game_end = true;lcd.setCursor(0, 0);lcd.print("YOU WON");}
+  if(points<=0){game_end = true;lcd.setCursor(0, 0);lcd.print("YOU LOST");}
+
+  if(game_end){ Serial.print("Score is ");Serial.println(points);}
+  for(int i = 0; game_end; i++){
+    digitalWrite(10, HIGH);digitalWrite(11, HIGH);digitalWrite(12, HIGH);digitalWrite(13, HIGH);
+    analogWrite(9,255);analogWrite(3,0);
+    tone(6,100);
+    delay(time);
+    tone(6,500);
+    analogWrite(9,0);
+    digitalWrite(10, LOW);digitalWrite(11, LOW);digitalWrite(12, LOW);digitalWrite(13, LOW);
+    delay(time);
+    noTone(6);
+    if(i==4){asm volatile ("jmp 0"); } 
+  }
+
+}
