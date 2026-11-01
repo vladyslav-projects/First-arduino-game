@@ -1,5 +1,5 @@
 # First-arduino-game
-Very simple game on arduino on the LEDs - It's kind of like the “Dinosaur” game on Google<br>
+It is my first very simple game on arduino on the LEDs - It's kind of like the “Dinosaur” game on Google<br>
 
 Author: Vladyslav Hrabovetskyi<br>
 Language: C++/C<br>
